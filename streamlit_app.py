@@ -336,10 +336,9 @@ def main():
         run_disabled = (not location and not has_markets) or (location_type == "Custom Location" and not custom_location)
         
         if st.button(
-            "🚀 Run Job Search", 
+            "🚀 Run Job Search",
             disabled=run_disabled,
-            type="primary",
-            width=None
+            type="primary"
         ):
             if not location and not has_markets:
                 st.error("❌ Please select a market or enter a custom location")

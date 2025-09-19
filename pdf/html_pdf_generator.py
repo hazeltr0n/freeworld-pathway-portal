@@ -9,11 +9,28 @@ import re
 import html as _html
 import os
 
+# Robust path resolution for both local and cloud deployment
 BASE = Path(__file__).resolve().parents[1]
 TEMPLATES = BASE / "templates"
+
+# Fallback template path resolution for cloud deployment
+if not TEMPLATES.exists():
+    # Try current directory (for Streamlit Cloud)
+    TEMPLATES = Path(__file__).resolve().parent.parent / "templates"
+    if not TEMPLATES.exists():
+        # Last resort: look relative to current working directory
+        TEMPLATES = Path.cwd() / "templates"
+
 STATIC = BASE / "static"
 ASSETS = BASE / "assets"
 OUTFIT_FONT_DIR = BASE / "Outfit" / "static"
+
+# Debug logging for template path
+print(f"🔍 Template path resolved to: {TEMPLATES}")
+print(f"🔍 Template path exists: {TEMPLATES.exists()}")
+if TEMPLATES.exists():
+    template_files = list(TEMPLATES.glob("*.html"))
+    print(f"🔍 Found template files: {[f.name for f in template_files]}")
 
 env = Environment(
     loader=FileSystemLoader(str(TEMPLATES)),
