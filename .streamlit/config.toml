@@ -1,0 +1,16 @@
+[theme]
+base = "dark"
+primaryColor = "#CDF95C"  # FreeWorld freedom green
+backgroundColor = "#191931"  # fw-midnight
+secondaryBackgroundColor = "#353548"  # fw-card-bg
+textColor = "#E5E5E5"  # light text
+
+[server]
+maxUploadSize = 200
+enableCORS = true
+enableXsrfProtection = true
+fileWatcherType = "none"
+# AGGRESSIVE CACHE BUST - 2025-09-05-14-40-PORTAL-FIX
+
+[browser]
+gatherUsageStats = false
