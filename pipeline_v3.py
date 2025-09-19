@@ -973,41 +973,65 @@ class FreeWorldPipelineV3:
             except Exception as e:
                 print(f"⚠️ Google Jobs API failed: {e}")
         
-        # Indeed API (if enabled)
+        # Indeed API (if enabled) - with support for comma-separated search terms
         if effective_limit > 0 and search_sources.get('indeed', False):
             print(f"🔍 Searching Indeed API for {effective_limit} jobs...")
+
+            # Parse comma-separated search terms
+            search_terms_list = [term.strip() for term in search_terms.split(',') if term.strip()]
+            print(f"📝 Processing {len(search_terms_list)} search terms: {', '.join(search_terms_list)}")
+
+            # Calculate jobs per search term
+            jobs_per_term = max(1, effective_limit // len(search_terms_list))
+            remaining_jobs = effective_limit % len(search_terms_list)
+
+            all_indeed_jobs = []
+
             try:
-                # Build Indeed URL for search
-                encoded_terms = search_terms.replace(' ', '+')
                 encoded_location = query_location.replace(' ', '+').replace(',', '%2C')
-                indeed_url = f"https://www.indeed.com/jobs?q={encoded_terms}&l={encoded_location}&radius={int(radius)}"
-                if no_experience:
-                    # Add "no experience" search context. 'sc' param encoding retained from v2
-                    indeed_url += "&sc=0kf%3Aattr%28D7S5D%29%3B"
-                
-                search_params = {
-                    'location': query_location,
-                    'search_terms': search_terms,
-                    'search_indeed': True,  # Enable Indeed search
-                    'indeed_url': indeed_url,
-                    'radius': radius,
-                    'no_experience': no_experience
-                }
-                
-                # Set mode info with proper field names for scraper
-                scraper_mode_info = {
-                    'indeed_limit': effective_limit,
-                    'limit': effective_limit
-                }
-                
-                result = self.scraper.run_full_search(search_params, scraper_mode_info)
-                # Handle list of raw Indeed jobs from scraper
-                if isinstance(result, list):
-                    fresh_jobs = result  # Already raw Indeed jobs
-                else:
-                    # Fallback for other formats
-                    fresh_jobs = result.get('jobs', []) if isinstance(result, dict) else []
-                print(f"✅ Retrieved {len(fresh_jobs)} jobs from Indeed")
+
+                for i, term in enumerate(search_terms_list):
+                    # Calculate limit for this term (distribute remainder across first terms)
+                    term_limit = jobs_per_term + (1 if i < remaining_jobs else 0)
+
+                    # Build Indeed URL for this specific search term
+                    encoded_term = term.replace(' ', '+')
+                    indeed_url = f"https://www.indeed.com/jobs?q={encoded_term}&l={encoded_location}&radius={int(radius)}"
+                    if no_experience:
+                        # Add "no experience" search context. 'sc' param encoding retained from v2
+                        indeed_url += "&sc=0kf%3Aattr%28D7S5D%29%3B"
+
+                    print(f"  🔍 Term {i+1}/{len(search_terms_list)}: '{term}' (limit: {term_limit})")
+
+                    search_params = {
+                        'location': query_location,
+                        'search_terms': term,  # Single term for this API call
+                        'search_indeed': True,  # Enable Indeed search
+                        'indeed_url': indeed_url,
+                        'radius': radius,
+                        'no_experience': no_experience
+                    }
+
+                    # Set mode info with proper field names for scraper
+                    scraper_mode_info = {
+                        'indeed_limit': term_limit,
+                        'limit': term_limit
+                    }
+
+                    result = self.scraper.run_full_search(search_params, scraper_mode_info)
+
+                    # Handle list of raw Indeed jobs from scraper
+                    if isinstance(result, list):
+                        term_jobs = result  # Already raw Indeed jobs
+                    else:
+                        # Fallback for other formats
+                        term_jobs = result.get('jobs', []) if isinstance(result, dict) else []
+
+                    print(f"    ✅ Retrieved {len(term_jobs)} jobs for '{term}'")
+                    all_indeed_jobs.extend(term_jobs)
+
+                fresh_jobs = all_indeed_jobs
+                print(f"✅ Total Indeed jobs retrieved: {len(fresh_jobs)} from {len(search_terms_list)} search terms")
             except Exception as e:
                 print(f"⚠️ Indeed API failed: {e}")
         
