@@ -6148,19 +6148,19 @@ def show_combined_batches_and_scheduling_page(coach):
             if client:
                 st.success("✅ Supabase client initialized")
                 try:
-                    res = client.table('jobs').select('*', count='exact').limit(0).execute()
-                    st.write({"jobs_count": getattr(res, 'count', None)})
+                    res = client.table('pathway_jobs').select('*', count='exact').limit(0).execute()
+                    st.write({"pathway_jobs_count": getattr(res, 'count', None)})
                 except Exception as e:
-                    st.info(f"jobs count not available: {e}")
+                    st.info(f"pathway_jobs count not available: {e}")
                 try:
                     resp = client.table('agent_profiles').select('*', count='exact').limit(0).execute()
                     st.write({"agent_profiles_count": getattr(resp, 'count', None)})
                 except Exception as e:
                     st.info(f"agent_profiles count not available: {e}")
                 try:
-                    one = client.table('jobs').select('job_title,company,market').order('created_at', desc=True).limit(1).execute()
+                    one = client.table('pathway_jobs').select('job_title,company,market').order('created_at', desc=True).limit(1).execute()
                     if getattr(one, 'data', None):
-                        st.caption("Latest job (sample):")
+                        st.caption("Latest pathway job (sample):")
                         st.write(one.data[0])
                 except Exception:
                     pass

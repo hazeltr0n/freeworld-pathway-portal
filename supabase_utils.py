@@ -165,7 +165,7 @@ def fetch_market_quality_counts(hours: int = 72) -> pd.DataFrame:
             end = start + page_size - 1
             res = (
                 client
-                .table('jobs')
+                .table('pathway_jobs')
                 .select('market,match_level,created_at')
                 .gte('created_at', since)
                 # Include all job quality levels to show complete breakdown
@@ -709,7 +709,7 @@ def instant_memory_search(location: str, search_terms: str = "", hours: int = 72
         print(f"🚫 Excluding {len(reported_urls)} reported jobs from memory search")
         
         # Direct Supabase query - no pipeline needed!
-        query = client.table('jobs').select('*')
+        query = client.table('pathway_jobs').select('*')
         
         # Exclude reported jobs (if any exist)
         if reported_urls:
