@@ -37,13 +37,15 @@ CREATE TABLE pathway_jobs (
     -- System fields
     created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
     updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+    classified_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
     final_status text,
     is_fresh_job boolean DEFAULT true,
 
     -- Link tracking
     tracked_url text,
     link_id text,
-    tags text
+    tags text,
+    apply_url text
 );
 
 -- Create indexes for performance
