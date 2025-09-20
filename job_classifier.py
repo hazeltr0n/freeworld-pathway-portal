@@ -64,7 +64,7 @@ class JobClassifier:
                 ]},
                 "training_provided": {"type": "boolean"}
             },
-            "required": ["job_id", "match", "reason", "summary", "fair_chance", "career_pathway", "training_provided"]
+            "required": ["job_id", "match", "reason", "summary", "normalized_location", "fair_chance", "career_pathway", "training_provided"]
         }
     
     def _retry_request(self, do_req, max_retries=5, base=0.5, cap=30.0):
