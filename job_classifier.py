@@ -936,7 +936,7 @@ Job Description:
                                     raise ValueError("No parsed content or content field in response")
                                 
                                 # Validate required fields are present
-                                required_fields = ['match', 'reason', 'summary', 'fair_chance', 'endorsements']
+                                required_fields = ['match', 'reason', 'summary', 'normalized_location', 'fair_chance', 'career_pathway', 'training_provided']
                                 if not all(key in parsed_result for key in required_fields):
                                     missing_fields = [key for key in required_fields if key not in parsed_result]
                                     
